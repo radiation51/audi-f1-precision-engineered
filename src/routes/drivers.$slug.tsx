@@ -1,11 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { DRIVERS } from "@/data/drivers";
+import { DRIVERS, type Driver } from "@/data/drivers";
 import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/drivers/$slug")({
-  loader: ({ params }) => {
+  loader: ({ params }): Driver => {
     const driver = DRIVERS.find((d) => d.slug === params.slug);
     if (!driver) throw notFound();
     return driver;

@@ -184,15 +184,16 @@
 
 @utility hairline {
   position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid oklch(1 0 0 / 6%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
 }
-@utility hairline::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid oklch(1 0 0 / 6%);
-  border-radius: inherit;
-  pointer-events: none;
-}
+
 
 /* Telemetry-inspired grid backdrop */
 .telemetry-grid {

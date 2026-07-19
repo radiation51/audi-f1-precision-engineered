@@ -103,7 +103,7 @@ function DriverPage() {
             </div>
 
             <div className="mt-10 space-y-3">
-              {d.stats.map((s, i) => (
+              {d.stats.map((s: Driver["stats"][number], i: number) => (
                 <div key={s.label}>
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-mono uppercase tracking-widest text-muted-foreground">{s.label}</span>

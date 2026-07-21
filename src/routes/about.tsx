@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { TIMELINE, VALUES } from "@/data/timeline";
 import factory from "@/assets/F1_2026_9155_BOR-L-2.avif.asset.json";
-import garage from "@/assets/garage.jpg";
+import team from "@/assets/F1_2026_9158_BOR_HUL-L-2.avif.asset.json";
 import engine from "@/assets/engine.jpg";
 import { Leaf, Cog, Cpu, Wind } from "lucide-react";
 

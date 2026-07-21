@@ -9,7 +9,7 @@ export const NEWS = [
     title: "Hartmann secures maiden podium in Melbourne",
     date: "Mar 24, 2026",
     tag: "Race Report",
-    img: img3,
+    img: raceAction.url,
     excerpt:
       "A composed drive on a two-stop strategy delivered the team its first F1 podium — third place, 6.4s off the leader.",
   },

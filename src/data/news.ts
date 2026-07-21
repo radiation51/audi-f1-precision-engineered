@@ -1,4 +1,4 @@
-import img2 from "@/assets/garage.jpg";
+import img2 from "@/assets/images-2.jpg.asset.json";
 import raceAction from "@/assets/f1-car-action.jpg.asset.json";
 
 export const NEWS = [
@@ -14,7 +14,7 @@ export const NEWS = [
     title: "Behind the scenes: 2 minutes with the strategy wall",
     date: "Apr 12, 2026",
     tag: "Feature",
-    img: img2,
+    img: img2.url,
     excerpt:
       "Race Director Mira Klein takes us inside the split-second calls that shaped a top-four finish in Shanghai.",
   },

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { TIMELINE, VALUES } from "@/data/timeline";
-import factory from "@/assets/factory.jpg";
+import factory from "@/assets/F1_2026_9155_BOR-L-2.avif.asset.json";
 import garage from "@/assets/garage.jpg";
 import engine from "@/assets/engine.jpg";
 import { Leaf, Cog, Cpu, Wind } from "lucide-react";
@@ -42,7 +42,7 @@ function About() {
 
       <section className="mx-auto mt-24 grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
         <Reveal>
-          <img src={factory} alt="Neuburg factory" loading="lazy" className="aspect-[4/3] w-full rounded-2xl border border-border object-cover" />
+          <img src={factory.url} alt="Neuburg factory" loading="lazy" className="aspect-[4/3] w-full rounded-2xl border border-border object-cover" />
         </Reveal>
         <Reveal delay={0.1} className="flex flex-col justify-center">
           <SectionEyebrow>Neuburg</SectionEyebrow>

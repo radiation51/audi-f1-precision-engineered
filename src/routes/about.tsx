@@ -42,7 +42,7 @@ function About() {
 
       <section className="mx-auto mt-24 grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
         <Reveal>
-          <img src={factory} alt="Neuburg factory" loading="lazy" className="aspect-[4/3] w-full rounded-2xl border border-border object-cover" />
+          <img src={factory.url} alt="Neuburg factory" loading="lazy" className="aspect-[4/3] w-full rounded-2xl border border-border object-cover" />
         </Reveal>
         <Reveal delay={0.1} className="flex flex-col justify-center">
           <SectionEyebrow>Neuburg</SectionEyebrow>

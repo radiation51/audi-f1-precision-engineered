@@ -107,7 +107,7 @@ function About() {
             </div>
           </div>
           <div className="space-y-4">
-            <img src={garage} alt="Team garage" loading="lazy" className="aspect-[4/5] w-full rounded-2xl border border-border object-cover" />
+            <img src={team.url} alt="Bortoleto and Hülkenberg" loading="lazy" className="aspect-[4/5] w-full rounded-2xl border border-border object-cover" />
             <img src={engine} alt="Power unit" loading="lazy" className="aspect-video w-full rounded-2xl border border-border object-cover" />
           </div>
         </div>

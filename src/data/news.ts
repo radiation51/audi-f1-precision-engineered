@@ -1,4 +1,4 @@
-import img2 from "@/assets/images-2.jpg.asset.json";
+import img2 from "@/assets/audi2_37.jpg.asset.json";
 import raceAction from "@/assets/f1-car-action.jpg.asset.json";
 
 export const NEWS = [

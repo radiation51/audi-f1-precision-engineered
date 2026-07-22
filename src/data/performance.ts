@@ -21,10 +21,10 @@ export const DRIVER_STANDINGS = [
   { pos: 1, name: "M. Verstappen", team: "Red Bull",   pts: 178 },
   { pos: 2, name: "L. Norris",     team: "McLaren",    pts: 156 },
   { pos: 3, name: "C. Leclerc",    team: "Ferrari",    pts: 141 },
-  { pos: 4, name: "N. Hartmann",   team: "Audi F1",    pts: 118 },
+  { pos: 4, name: "N. Hülkenberg", team: "Audi F1",    pts: 118 },
   { pos: 5, name: "G. Russell",    team: "Mercedes",   pts: 112 },
   { pos: 6, name: "O. Piastri",    team: "McLaren",    pts: 104 },
-  { pos: 9, name: "M. Reyes",      team: "Audi F1",    pts: 67 },
+  { pos: 9, name: "G. Bortoleto",  team: "Audi F1",    pts: 67 },
 ];
 
 export const CONSTRUCTOR_STANDINGS = [

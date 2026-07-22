@@ -116,8 +116,8 @@ function Performance() {
                 <tr>
                   <th className="px-6 py-3">GP</th>
                   <th className="px-2 py-3">Date</th>
-                  <th className="px-2 py-3">Hartmann</th>
-                  <th className="px-2 py-3">Reyes</th>
+                  <th className="px-2 py-3">Hülkenberg</th>
+                  <th className="px-2 py-3">Bortoleto</th>
                   <th className="px-6 py-3 text-right">Pts</th>
                 </tr>
               </thead>

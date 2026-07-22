@@ -3,7 +3,7 @@ import raceAction from "@/assets/f1-car-action.jpg.asset.json";
 
 export const NEWS = [
   {
-    title: "Hartmann secures maiden podium in Melbourne",
+    title: "Hülkenberg secures maiden podium in Melbourne",
     date: "Mar 24, 2026",
     tag: "Race Report",
     img: raceAction.url,

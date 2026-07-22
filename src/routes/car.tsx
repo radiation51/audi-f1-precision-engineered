@@ -83,7 +83,7 @@ function CarPage() {
               A 1.6 litre V6 turbo, twin MGUs and a high-density battery pack — all designed in Neuburg. Explode the assembly, click a part, meet the future of racing engines.
             </p>
           </div>
-          <img src={engineImg} alt="Power unit" loading="lazy" className="aspect-video rounded-2xl border border-border object-cover" />
+          <img src={engineImg.url} alt="Power unit" loading="lazy" className="aspect-video rounded-2xl border border-border object-cover" />
         </div>
       </section>
 

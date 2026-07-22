@@ -1,5 +1,8 @@
-import driver1 from "@/assets/driver-1.jpg";
-import driver2 from "@/assets/driver-2.jpg";
+import driver1Asset from "@/assets/F1_p_2026_9224_HUL-L-2.avif.asset.json";
+import driver2Asset from "@/assets/F1_p_2026_9236_BOR-L-2.avif.asset.json";
+
+const driver1 = driver1Asset.url;
+const driver2 = driver2Asset.url;
 
 export type Driver = {
   slug: string;

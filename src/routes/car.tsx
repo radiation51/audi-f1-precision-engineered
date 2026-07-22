@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { HOTSPOTS } from "@/data/carHotspots";
-import engineImg from "@/assets/engine.jpg";
+import engineImg from "@/assets/mercedes_amg_f1_engine_001.webp.asset.json";
 
 const CarScene = lazy(() => import("@/components/car/CarScene"));
 const EngineScene = lazy(() => import("@/components/car/EngineScene"));

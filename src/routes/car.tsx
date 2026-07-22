@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { HOTSPOTS } from "@/data/carHotspots";
-import engineImg from "@/assets/engine.jpg";
+import engineImg from "@/assets/mercedes_amg_f1_engine_001.webp.asset.json";
 
 const CarScene = lazy(() => import("@/components/car/CarScene"));
 const EngineScene = lazy(() => import("@/components/car/EngineScene"));
@@ -83,7 +83,7 @@ function CarPage() {
               A 1.6 litre V6 turbo, twin MGUs and a high-density battery pack — all designed in Neuburg. Explode the assembly, click a part, meet the future of racing engines.
             </p>
           </div>
-          <img src={engineImg} alt="Power unit" loading="lazy" className="aspect-video rounded-2xl border border-border object-cover" />
+          <img src={engineImg.url} alt="Power unit" loading="lazy" className="aspect-video rounded-2xl border border-border object-cover" />
         </div>
       </section>
 

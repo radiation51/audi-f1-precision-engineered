@@ -3,7 +3,7 @@ import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { TIMELINE, VALUES } from "@/data/timeline";
 import factory from "@/assets/F1_2026_9155_BOR-L-2.avif.asset.json";
 import team from "@/assets/F1_2026_9158_BOR_HUL-L-2.avif.asset.json";
-import engine from "@/assets/engine.jpg";
+import engine from "@/assets/F1_2026_9163_HUL-L-2.avif.asset.json";
 import { Leaf, Cog, Cpu, Wind } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
@@ -108,7 +108,7 @@ function About() {
           </div>
           <div className="space-y-4">
             <img src={team.url} alt="Bortoleto and Hülkenberg" loading="lazy" className="aspect-[4/5] w-full rounded-2xl border border-border object-cover" />
-            <img src={engine} alt="Power unit" loading="lazy" className="aspect-video w-full rounded-2xl border border-border object-cover" />
+            <img src={engine.url} alt="Nico Hülkenberg driving through a corner" loading="lazy" className="aspect-video w-full rounded-2xl border border-border object-cover" />
           </div>
         </div>
       </section>

@@ -77,7 +77,7 @@ export function Nav() {
             {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <Link
-            to="/contact"
+            to="/drivers"
             className="hidden md:inline-flex items-center rounded-md bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition hover:bg-primary/90"
           >
             Join Team

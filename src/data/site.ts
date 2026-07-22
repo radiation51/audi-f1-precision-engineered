@@ -5,7 +5,6 @@ export const NAV_LINKS = [
   { to: "/drivers", label: "Drivers" },
   { to: "/performance", label: "Performance" },
   { to: "/gallery", label: "Gallery" },
-  { to: "/contact", label: "Contact" },
 ] as const;
 
 export const SPONSORS = [

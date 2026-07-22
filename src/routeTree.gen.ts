@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as DriversRouteImport } from './routes/drivers'
-import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CarRouteImport } from './routes/car'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -31,11 +30,6 @@ const GalleryRoute = GalleryRouteImport.update({
 const DriversRoute = DriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CarRoute = CarRouteImport.update({
@@ -63,7 +57,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/car': typeof CarRoute
-  '/contact': typeof ContactRoute
   '/drivers': typeof DriversRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/performance': typeof PerformanceRoute
@@ -73,7 +66,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/car': typeof CarRoute
-  '/contact': typeof ContactRoute
   '/drivers': typeof DriversRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/performance': typeof PerformanceRoute
@@ -84,7 +76,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/car': typeof CarRoute
-  '/contact': typeof ContactRoute
   '/drivers': typeof DriversRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/performance': typeof PerformanceRoute
@@ -96,7 +87,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/car'
-    | '/contact'
     | '/drivers'
     | '/gallery'
     | '/performance'
@@ -106,7 +96,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/car'
-    | '/contact'
     | '/drivers'
     | '/gallery'
     | '/performance'
@@ -116,7 +105,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/car'
-    | '/contact'
     | '/drivers'
     | '/gallery'
     | '/performance'
@@ -127,7 +115,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   CarRoute: typeof CarRoute
-  ContactRoute: typeof ContactRoute
   DriversRoute: typeof DriversRouteWithChildren
   GalleryRoute: typeof GalleryRoute
   PerformanceRoute: typeof PerformanceRoute
@@ -154,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: '/drivers'
       fullPath: '/drivers'
       preLoaderRoute: typeof DriversRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/car': {
@@ -209,7 +189,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CarRoute: CarRoute,
-  ContactRoute: ContactRoute,
   DriversRoute: DriversRouteWithChildren,
   GalleryRoute: GalleryRoute,
   PerformanceRoute: PerformanceRoute,

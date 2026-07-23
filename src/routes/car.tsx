@@ -88,13 +88,14 @@ function CarPage() {
       </section>
 
 
-      <section className="mx-auto mt-10 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto mt-24 max-w-7xl px-4 sm:px-6 lg:px-8">
         <ClientOnly>
           <Suspense fallback={<Skeleton label="power unit" />}>
             <EngineScene />
           </Suspense>
         </ClientOnly>
       </section>
+
 
       <Reveal className="mx-auto mt-24 max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="glass hairline grid gap-6 rounded-2xl p-8 sm:grid-cols-3">

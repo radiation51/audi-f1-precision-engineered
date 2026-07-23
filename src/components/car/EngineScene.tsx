@@ -1,92 +1,11 @@
-import { Suspense, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, Html } from "@react-three/drei";
-import * as THREE from "three";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ENGINE_PARTS, type EnginePart } from "@/data/engineParts";
+import engineVideo from "@/assets/engine-lumina.mp4.asset.json";
 
-type Placed = {
-  part: EnginePart;
-  base: [number, number, number]; // exploded offset direction
-  origin: [number, number, number];
-  size: [number, number, number];
-  shape: "box" | "cyl" | "sphere";
-};
 
-const LAYOUT: Placed[] = [
-  { part: ENGINE_PARTS[0], base: [0, 0, 0],   origin: [0, 0, 0],     size: [1.2, 0.9, 0.9], shape: "box" },       // ICE
-  { part: ENGINE_PARTS[1], base: [1.2, 0, 0], origin: [0.9, 0.15, 0], size: [0.35, 0.35, 0.35], shape: "cyl" },   // Turbo
-  { part: ENGINE_PARTS[2], base: [1.2, 0.8, 0], origin: [0.9, 0.55, 0], size: [0.3, 0.3, 0.3], shape: "sphere" }, // MGU-H
-  { part: ENGINE_PARTS[3], base: [-1.2, 0, 0], origin: [-0.85, 0, 0], size: [0.35, 0.35, 0.35], shape: "sphere" },// MGU-K
-  { part: ENGINE_PARTS[4], base: [0, -1.2, 0], origin: [0, -0.7, 0],  size: [1.1, 0.25, 0.6], shape: "box" },     // Battery
-  { part: ENGINE_PARTS[5], base: [0, 1.2, 0],  origin: [0, 0.65, 0],  size: [0.9, 0.15, 0.5], shape: "box" },     // ERS
-  { part: ENGINE_PARTS[6], base: [0, 0, 1.2],  origin: [0, 0.1, 0.65], size: [0.7, 0.35, 0.15], shape: "box" },   // Cooling
-  { part: ENGINE_PARTS[7], base: [-1.2, -0.4, 0], origin: [-0.9, -0.2, 0.4], size: [0.45, 0.35, 0.55], shape: "box" }, // Gearbox
-];
 
-function Part({
-  placed,
-  explode,
-  selected,
-  onSelect,
-}: {
-  placed: Placed;
-  explode: number;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const ref = useRef<THREE.Mesh>(null);
-  const target = useMemo(() => {
-    const b = placed.base;
-    return [
-      placed.origin[0] + b[0] * explode,
-      placed.origin[1] + b[1] * explode,
-      placed.origin[2] + b[2] * explode,
-    ] as [number, number, number];
-  }, [placed, explode]);
 
-  useFrame(() => {
-    const m = ref.current;
-    if (!m) return;
-    m.position.lerp(new THREE.Vector3(...target), 0.12);
-    // Animate piston bounce on ICE
-    if (placed.part.id === "ice") {
-      m.scale.y = 1 + Math.sin(performance.now() * 0.02) * 0.02;
-    }
-  });
-
-  const color = placed.part.color;
-  return (
-    <group>
-      <mesh
-        ref={ref}
-        position={placed.origin}
-        onClick={(e) => { e.stopPropagation(); onSelect(); }}
-        onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = "pointer"; }}
-        onPointerOut={() => { document.body.style.cursor = "default"; }}
-        castShadow
-      >
-        {placed.shape === "box" && <boxGeometry args={placed.size} />}
-        {placed.shape === "cyl" && <cylinderGeometry args={[placed.size[0], placed.size[0], placed.size[1], 24]} />}
-        {placed.shape === "sphere" && <sphereGeometry args={[placed.size[0], 24, 16]} />}
-        <meshStandardMaterial
-          color={color}
-          metalness={0.75}
-          roughness={0.28}
-          emissive={selected ? color : "#000"}
-          emissiveIntensity={selected ? 0.4 : 0}
-        />
-      </mesh>
-      {selected && (
-        <Html position={target} center distanceFactor={6}>
-          <div className="whitespace-nowrap rounded bg-primary px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-white">
-            {placed.part.name}
-          </div>
-        </Html>
-      )}
-    </group>
-  );
-}
 
 export default function EngineScene() {
   const [explode, setExplode] = useState(0.6);

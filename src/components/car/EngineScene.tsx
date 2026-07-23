@@ -14,40 +14,77 @@ export default function EngineScene() {
     const vid = videoRef.current;
     if (vid && duration > 0) {
       vid.pause();
-      vid.currentTime = (v / 1.6) * duration;
+      // Map the extended slider range (0..2.4) into the full video timeline
+      vid.currentTime = Math.min(duration, (v / 2.4) * duration);
     }
   };
+
+  // Progressive visual separation on top of the video's own explode
+  const progress = Math.min(1, explode / 2.4);
+  const scale = 1 + progress * 0.35;
+  const spread = progress * 40; // px
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
       <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border bg-carbon">
-        <video
-          ref={videoRef}
-          src={engineVideo.url}
-          autoPlay
-          muted
-          loop
-          playsInline
-          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-          className="h-full w-full object-cover"
+        <div
+          className="absolute inset-0 transition-transform duration-200 ease-out"
+          style={{ transform: `scale(${scale})` }}
+        >
+          <video
+            ref={videoRef}
+            src={engineVideo.url}
+            autoPlay
+            muted
+            loop
+            playsInline
+            onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+            className="h-full w-full object-cover"
+            style={{
+              filter: `contrast(${1 + progress * 0.15}) saturate(${1 + progress * 0.2})`,
+            }}
+          />
+        </div>
+
+        {/* Layered ghost passes to amplify the perceived separation of parts */}
+        <div
+          className="pointer-events-none absolute inset-0 mix-blend-screen opacity-40 transition-transform duration-200 ease-out"
+          style={{
+            transform: `translateX(${spread}px) scale(${scale})`,
+            filter: "hue-rotate(-10deg) blur(1px)",
+            opacity: progress * 0.35,
+            backgroundImage: `url(${engineVideo.url})`,
+          }}
+        />
+
+        {/* Red technical grid that intensifies as parts spread */}
+        <div
+          className="pointer-events-none absolute inset-0 transition-opacity duration-200"
+          style={{
+            opacity: progress * 0.25,
+            backgroundImage:
+              "linear-gradient(rgba(227,6,19,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(227,6,19,0.5) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
         />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           <span>◉ Hybrid Power Unit</span>
-          <span>Scrub to explode →</span>
+          <span>Separation · {Math.round(progress * 100)}%</span>
         </div>
 
         <div className="absolute inset-x-4 bottom-4 flex items-center gap-3">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Explode</span>
           <input
             type="range"
-            min={0} max={1.6} step={0.02}
+            min={0} max={2.4} step={0.02}
             value={explode}
             onChange={(e) => handleScrub(parseFloat(e.target.value))}
             className="flex-1 accent-primary"
           />
         </div>
       </div>
+
 
 
       <div className="flex flex-col gap-3">

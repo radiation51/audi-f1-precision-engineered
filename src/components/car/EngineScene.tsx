@@ -1,42 +1,40 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ENGINE_PARTS, type EnginePart } from "@/data/engineParts";
 import engineVideo from "@/assets/engine-lumina.mp4.asset.json";
 
-
-
-
-
 export default function EngineScene() {
-  const [explode, setExplode] = useState(0.6);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [explode, setExplode] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [selected, setSelected] = useState<EnginePart | null>(ENGINE_PARTS[0]);
+
+  const handleScrub = (v: number) => {
+    setExplode(v);
+    const vid = videoRef.current;
+    if (vid && duration > 0) {
+      vid.pause();
+      vid.currentTime = (v / 1.6) * duration;
+    }
+  };
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
       <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border bg-carbon">
-        <Canvas shadows dpr={[1, 1.75]} camera={{ position: [3.2, 2.4, 3.4], fov: 45 }}>
-          <color attach="background" args={["#0a0a0b"]} />
-          <ambientLight intensity={0.35} />
-          <directionalLight position={[4, 5, 3]} intensity={1.1} castShadow />
-          <spotLight position={[-3, 4, -2]} intensity={0.7} color={"#e30613"} />
-          <Suspense fallback={null}>
-            {LAYOUT.map((p) => (
-              <Part
-                key={p.part.id}
-                placed={p}
-                explode={explode}
-                selected={selected?.id === p.part.id}
-                onSelect={() => setSelected(p.part)}
-              />
-            ))}
-            <Environment preset="city" />
-          </Suspense>
-          <OrbitControls enablePan={false} minDistance={3} maxDistance={10} />
-        </Canvas>
+        <video
+          ref={videoRef}
+          src={engineVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+          className="h-full w-full object-cover"
+        />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
           <span>◉ Hybrid Power Unit</span>
-          <span>Click part · Explode →</span>
+          <span>Scrub to explode →</span>
         </div>
 
         <div className="absolute inset-x-4 bottom-4 flex items-center gap-3">
@@ -45,11 +43,12 @@ export default function EngineScene() {
             type="range"
             min={0} max={1.6} step={0.02}
             value={explode}
-            onChange={(e) => setExplode(parseFloat(e.target.value))}
+            onChange={(e) => handleScrub(parseFloat(e.target.value))}
             className="flex-1 accent-primary"
           />
         </div>
       </div>
+
 
       <div className="flex flex-col gap-3">
         <div className="glass rounded-xl p-4">

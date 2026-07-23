@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Reveal, SectionEyebrow } from "@/components/site/Reveal";
 import { HOTSPOTS } from "@/data/carHotspots";
-import engineVideo from "@/assets/engine-explode.mp4.asset.json";
+import engineImg from "@/assets/mercedes_amg_f1_engine_001.webp.asset.json";
 
 const CarScene = lazy(() => import("@/components/car/CarScene"));
 const EngineScene = lazy(() => import("@/components/car/EngineScene"));
@@ -72,8 +72,8 @@ function CarPage() {
         </div>
       </section>
 
-      <section className="mx-auto mt-40 max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-16 lg:grid-cols-2 lg:items-center lg:gap-24">
+      <section className="mx-auto mt-32 max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-end">
           <div>
             <SectionEyebrow>Hybrid Power Unit</SectionEyebrow>
             <h2 className="font-display text-4xl font-black leading-tight sm:text-5xl">
@@ -83,19 +83,17 @@ function CarPage() {
               A 1.6 litre V6 turbo, twin MGUs and a high-density battery pack — all designed in Neuburg. Explode the assembly, click a part, meet the future of racing engines.
             </p>
           </div>
-          <video src={engineVideo.url} autoPlay muted loop playsInline className="aspect-video w-full rounded-2xl border border-border object-cover shadow-2xl shadow-primary/10" />
+          <img src={engineImg.url} alt="Power unit" loading="lazy" className="aspect-video rounded-2xl border border-border object-cover" />
         </div>
       </section>
 
-
-      <section className="mx-auto mt-24 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto mt-10 max-w-7xl px-4 sm:px-6 lg:px-8">
         <ClientOnly>
           <Suspense fallback={<Skeleton label="power unit" />}>
             <EngineScene />
           </Suspense>
         </ClientOnly>
       </section>
-
 
       <Reveal className="mx-auto mt-24 max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="glass hairline grid gap-6 rounded-2xl p-8 sm:grid-cols-3">

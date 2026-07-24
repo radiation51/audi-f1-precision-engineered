@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import carModel from "@/assets/audi-f1-2026.glb.asset.json";
 
 const RED = "#e30613";
-const CAR_SCALE = 9;
+const CAR_SCALE = 4.5;
 
 useGLTF.preload(carModel.url);
 
@@ -57,7 +57,7 @@ export default function CarScene() {
       <Canvas
         shadows
         dpr={[1, 1.75]}
-        camera={{ position: [0.85, 0.62, 0.85], fov: 18 }}
+        camera={{ position: [1.8, 1.35, 1.8], fov: 28 }}
       >
         <color attach="background" args={["#0a0a0b"]} />
         <ambientLight intensity={0.45} />
@@ -65,7 +65,7 @@ export default function CarScene() {
         <spotLight position={[-4, 5, -2]} intensity={0.9} color={RED} />
         <Suspense fallback={null}>
           <F1Car spinning={spin} />
-          <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={54} blur={2.4} far={12} />
+          <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={32} blur={2.4} far={8} />
           <Environment preset="warehouse" />
           {HOTSPOTS.map((h) => (
             <CarHotspotMarker
@@ -78,9 +78,8 @@ export default function CarScene() {
         </Suspense>
         <OrbitControls
           enablePan={false}
-          target={[0, 0.9, 0]}
-          minDistance={0.55}
-          maxDistance={3}
+          minDistance={1.5}
+          maxDistance={5}
           maxPolarAngle={Math.PI / 2.05}
           onStart={() => setSpin(false)}
         />

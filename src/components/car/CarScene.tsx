@@ -10,96 +10,17 @@ const RED = "#e30613";
 
 useGLTF.preload(carModel.url);
 
-function Tyre({ x, z }: { x: number; z: number }) {
-  return (
-    <mesh position={[x, 0.4, z]} castShadow>
-      <cylinderGeometry args={[0.42, 0.42, 0.34, 32]} />
-      <meshStandardMaterial color={"#0b0b0c"} roughness={0.8} metalness={0.1} />
-    </mesh>
-  );
-}
-
 function F1Car({ spinning }: { spinning: boolean }) {
   const group = useRef<THREE.Group>(null);
+  const { scene } = useGLTF(carModel.url);
   useFrame((_, dt) => {
     if (spinning && group.current) group.current.rotation.y += dt * 0.25;
   });
   return (
-    <group ref={group} position={[0, 0, 0]}>
-      {/* Floor / underbody */}
-      <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[3.4, 0.06, 1.6]} />
-        <meshStandardMaterial color={CARBON} roughness={0.4} metalness={0.6} />
-      </mesh>
-      {/* Nose */}
-      <mesh position={[1.75, 0.32, 0]} castShadow>
-        <coneGeometry args={[0.3, 1.2, 16]} />
-        <meshStandardMaterial color={CARBON} roughness={0.35} metalness={0.6} />
-      </mesh>
-      {/* Cockpit / chassis */}
-      <mesh position={[0.05, 0.42, 0]} castShadow>
-        <boxGeometry args={[1.9, 0.28, 0.6]} />
-        <meshStandardMaterial color={CARBON} roughness={0.3} metalness={0.7} />
-      </mesh>
-      {/* Red accent stripe */}
-      <mesh position={[0.05, 0.58, 0]}>
-        <boxGeometry args={[1.9, 0.03, 0.62]} />
-        <meshStandardMaterial color={RED} emissive={RED} emissiveIntensity={0.35} metalness={0.4} roughness={0.3} />
-      </mesh>
-      {/* Sidepods */}
-      <mesh position={[-0.1, 0.36, 0.6]} castShadow>
-        <boxGeometry args={[1.6, 0.22, 0.35]} />
-        <meshStandardMaterial color={CARBON} roughness={0.4} metalness={0.5} />
-      </mesh>
-      <mesh position={[-0.1, 0.36, -0.6]} castShadow>
-        <boxGeometry args={[1.6, 0.22, 0.35]} />
-        <meshStandardMaterial color={CARBON} roughness={0.4} metalness={0.5} />
-      </mesh>
-      {/* Halo */}
-      <mesh position={[0.3, 0.7, 0]}>
-        <torusGeometry args={[0.34, 0.03, 12, 24, Math.PI]} />
-        <meshStandardMaterial color={CHROME} metalness={0.9} roughness={0.25} />
-      </mesh>
-      {/* Airbox */}
-      <mesh position={[-0.4, 0.72, 0]} castShadow>
-        <boxGeometry args={[0.5, 0.28, 0.35]} />
-        <meshStandardMaterial color={CARBON} roughness={0.35} metalness={0.6} />
-      </mesh>
-      {/* Rear wing */}
-      <group position={[-1.65, 0.6, 0]}>
-        <mesh position={[0, 0.35, 0]} castShadow>
-          <boxGeometry args={[0.06, 0.04, 1.1]} />
-          <meshStandardMaterial color={CARBON} metalness={0.5} roughness={0.35} />
-        </mesh>
-        <mesh position={[0, 0.28, 0.55]} castShadow>
-          <boxGeometry args={[0.06, 0.5, 0.04]} />
-          <meshStandardMaterial color={CARBON} />
-        </mesh>
-        <mesh position={[0, 0.28, -0.55]} castShadow>
-          <boxGeometry args={[0.06, 0.5, 0.04]} />
-          <meshStandardMaterial color={CARBON} />
-        </mesh>
-        <mesh position={[0, 0.36, 0]}>
-          <boxGeometry args={[0.06, 0.02, 1.12]} />
-          <meshStandardMaterial color={RED} emissive={RED} emissiveIntensity={0.3} />
-        </mesh>
-      </group>
-      {/* Front wing */}
-      <group position={[2.2, 0.24, 0]}>
-        <mesh castShadow>
-          <boxGeometry args={[0.16, 0.04, 1.4]} />
-          <meshStandardMaterial color={CARBON} />
-        </mesh>
-        <mesh position={[0, 0.02, 0]}>
-          <boxGeometry args={[0.16, 0.02, 1.42]} />
-          <meshStandardMaterial color={RED} emissive={RED} emissiveIntensity={0.3} />
-        </mesh>
-      </group>
-      {/* Tyres */}
-      <Tyre x={1.4} z={0.75} />
-      <Tyre x={1.4} z={-0.75} />
-      <Tyre x={-1.2} z={0.85} />
-      <Tyre x={-1.2} z={-0.85} />
+    <group ref={group}>
+      <Center>
+        <primitive object={scene} scale={1.4} />
+      </Center>
     </group>
   );
 }

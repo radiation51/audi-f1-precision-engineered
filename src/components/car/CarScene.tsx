@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import carModel from "@/assets/audi-f1-2026.glb.asset.json";
 
 const RED = "#e30613";
-const CAR_SCALE = 2.5;
+const CAR_SCALE = 4.5;
 
 useGLTF.preload(carModel.url);
 
@@ -57,7 +57,7 @@ export default function CarScene() {
       <Canvas
         shadows
         dpr={[1, 1.75]}
-        camera={{ position: [3, 2.25, 3], fov: 35 }}
+        camera={{ position: [1.8, 1.35, 1.8], fov: 28 }}
       >
         <color attach="background" args={["#0a0a0b"]} />
         <ambientLight intensity={0.35} />

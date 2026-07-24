@@ -20,7 +20,7 @@ function F1Car({ spinning }: { spinning: boolean }) {
   return (
     <group ref={group}>
       <Center>
-        <primitive object={scene} scale={1.4} />
+        <primitive object={scene} scale={CAR_SCALE} />
       </Center>
     </group>
   );

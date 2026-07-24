@@ -60,9 +60,9 @@ export default function CarScene() {
         camera={{ position: [1.8, 1.35, 1.8], fov: 28 }}
       >
         <color attach="background" args={["#0a0a0b"]} />
-        <ambientLight intensity={0.35} />
-        <directionalLight position={[5, 6, 4]} intensity={1.4} castShadow />
-        <spotLight position={[-4, 5, -2]} intensity={0.7} color={RED} />
+        <ambientLight intensity={0.45} />
+        <directionalLight position={[5, 6, 4]} intensity={1.7} castShadow />
+        <spotLight position={[-4, 5, -2]} intensity={0.9} color={RED} />
         <Suspense fallback={null}>
           <F1Car spinning={spin} />
           <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={32} blur={2.4} far={8} />

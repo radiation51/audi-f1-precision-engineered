@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import carModel from "@/assets/audi-f1-2026.glb.asset.json";
 
 const RED = "#e30613";
+const CAR_SCALE = 2.5;
 
 useGLTF.preload(carModel.url);
 
@@ -19,7 +20,7 @@ function F1Car({ spinning }: { spinning: boolean }) {
   return (
     <group ref={group}>
       <Center>
-        <primitive object={scene} scale={1.4} />
+        <primitive object={scene} scale={CAR_SCALE} />
       </Center>
     </group>
   );
@@ -28,9 +29,9 @@ function F1Car({ spinning }: { spinning: boolean }) {
 function CarHotspotMarker({ h, onClick, active }: { h: Hotspot; onClick: () => void; active: boolean }) {
   // Map 2D hotspot coords to a 3D position around the car (top view)
   const pos: [number, number, number] = [
-    (50 - h.x) / 25,   // x (front-back)
-    0.9,
-    (h.y - 50) / 40,   // z (side-side)
+    ((50 - h.x) / 25) * CAR_SCALE,   // x (front-back)
+    0.9 * CAR_SCALE,
+    ((h.y - 50) / 40) * CAR_SCALE,   // z (side-side)
   ];
   return (
     <Html position={pos} center distanceFactor={8}>
@@ -56,15 +57,15 @@ export default function CarScene() {
       <Canvas
         shadows
         dpr={[1, 1.75]}
-        camera={{ position: [4, 3, 4.5], fov: 40 }}
+        camera={{ position: [3, 2.25, 3], fov: 35 }}
       >
         <color attach="background" args={["#0a0a0b"]} />
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 6, 4]} intensity={1.2} castShadow />
-        <spotLight position={[-4, 5, -2]} intensity={0.6} color={RED} />
+        <ambientLight intensity={0.35} />
+        <directionalLight position={[5, 6, 4]} intensity={1.4} castShadow />
+        <spotLight position={[-4, 5, -2]} intensity={0.7} color={RED} />
         <Suspense fallback={null}>
           <F1Car spinning={spin} />
-          <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={12} blur={2.4} far={6} />
+          <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={18} blur={2.4} far={8} />
           <Environment preset="warehouse" />
           {HOTSPOTS.map((h) => (
             <CarHotspotMarker
@@ -77,8 +78,8 @@ export default function CarScene() {
         </Suspense>
         <OrbitControls
           enablePan={false}
-          minDistance={4}
-          maxDistance={12}
+          minDistance={2.5}
+          maxDistance={8}
           maxPolarAngle={Math.PI / 2.05}
           onStart={() => setSpin(false)}
         />

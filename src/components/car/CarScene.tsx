@@ -1,13 +1,14 @@
 import { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, Html, ContactShadows } from "@react-three/drei";
+import { OrbitControls, Environment, Html, ContactShadows, useGLTF, Center } from "@react-three/drei";
 import * as THREE from "three";
 import { HOTSPOTS, type Hotspot } from "@/data/carHotspots";
 import { motion, AnimatePresence } from "framer-motion";
+import carModel from "@/assets/audi-f1-2026.glb.asset.json";
 
-const CARBON = "#0f0f10";
 const RED = "#e30613";
-const CHROME = "#c9c9c9";
+
+useGLTF.preload(carModel.url);
 
 function Tyre({ x, z }: { x: number; z: number }) {
   return (

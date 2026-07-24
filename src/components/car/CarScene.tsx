@@ -65,7 +65,7 @@ export default function CarScene() {
         <spotLight position={[-4, 5, -2]} intensity={0.7} color={RED} />
         <Suspense fallback={null}>
           <F1Car spinning={spin} />
-          <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={18} blur={2.4} far={8} />
+          <ContactShadows position={[0, 0.02, 0]} opacity={0.55} scale={32} blur={2.4} far={8} />
           <Environment preset="warehouse" />
           {HOTSPOTS.map((h) => (
             <CarHotspotMarker
@@ -78,8 +78,8 @@ export default function CarScene() {
         </Suspense>
         <OrbitControls
           enablePan={false}
-          minDistance={2.5}
-          maxDistance={8}
+          minDistance={1.5}
+          maxDistance={5}
           maxPolarAngle={Math.PI / 2.05}
           onStart={() => setSpin(false)}
         />

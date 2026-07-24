@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import carModel from "@/assets/audi-f1-2026.glb.asset.json";
 
 const RED = "#e30613";
+const CAR_SCALE = 2.5;
 
 useGLTF.preload(carModel.url);
 

@@ -29,9 +29,9 @@ function F1Car({ spinning }: { spinning: boolean }) {
 function CarHotspotMarker({ h, onClick, active }: { h: Hotspot; onClick: () => void; active: boolean }) {
   // Map 2D hotspot coords to a 3D position around the car (top view)
   const pos: [number, number, number] = [
-    (50 - h.x) / 25,   // x (front-back)
-    0.9,
-    (h.y - 50) / 40,   // z (side-side)
+    ((50 - h.x) / 25) * CAR_SCALE,   // x (front-back)
+    0.9 * CAR_SCALE,
+    ((h.y - 50) / 40) * CAR_SCALE,   // z (side-side)
   ];
   return (
     <Html position={pos} center distanceFactor={8}>

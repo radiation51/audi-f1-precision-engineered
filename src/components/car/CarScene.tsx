@@ -57,7 +57,7 @@ export default function CarScene() {
       <Canvas
         shadows
         dpr={[1, 1.75]}
-        camera={{ position: [1.8, 1.35, 1.8], fov: 28 }}
+        camera={{ position: [0.9, 0.7, 0.9], fov: 28 }}
       >
         <color attach="background" args={["#0a0a0b"]} />
         <ambientLight intensity={0.45} />

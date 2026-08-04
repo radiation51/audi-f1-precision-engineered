@@ -78,8 +78,8 @@ export default function CarScene() {
         </Suspense>
         <OrbitControls
           enablePan={false}
-          minDistance={1.5}
-          maxDistance={5}
+          minDistance={1.0}
+          maxDistance={3.5}
           maxPolarAngle={Math.PI / 2.05}
           onStart={() => setSpin(false)}
         />

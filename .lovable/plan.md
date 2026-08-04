@@ -1,18 +1,20 @@
-## Goal
-Replace the currently selected image on the Home page "Latest" section (the first news card: "Hartmann secures maiden podium in Melbourne") with the uploaded image, without generating a new image.
+# Fix the Audi rings logo
 
-## Current state
-- The selected `<img>` is rendered from `src/routes/index.tsx` line 206, mapping the `NEWS` array.
-- The first news item is defined in `src/data/news.ts` and uses `import img3 from "@/assets/race.jpg"`.
-- The uploaded image is available at `user-uploads://images.jpg` (mounted at `/mnt/user-uploads/images.jpg`).
+## Problem
 
-## Plan
-1. Upload the uploaded image to Lovable Assets:
-   - `mkdir -p src/assets`
-   - `lovable-assets create --file /mnt/user-uploads/images.jpg --filename f1-car-action.jpg > src/assets/f1-car-action.jpg.asset.json`
-2. Update `src/data/news.ts`:
-   - Add a new import for the generated asset pointer: `import raceAction from "@/assets/f1-car-action.jpg.asset.json";`
-   - Change the first news item's `img` from `img3` to `raceAction.url`.
-3. Verify the change renders correctly in the preview and that the new image appears in the first news card.
+The four rings in the header/footer logo are drawn far apart inside an oversized viewBox, so they read as a row of loose circles instead of the interlocking Audi rings. The circles sit at x = 10, 50, 90, 130 with radius 15 in a 200x40 box: gaps between them, plus a large empty area on the right that makes the logo look off-centre and too small next to the "F1." wordmark.
 
-No component template changes are needed; only the data source and a new asset pointer are updated.
+## Fix
+
+Rework `AudiRings` in `src/components/site/Logo.tsx`:
+
+- Tighten the viewBox to fit the artwork exactly (roughly 124x36), removing the dead space.
+- Space the four circles so they overlap like the real mark: centres at 18, 46, 74, 102 with radius 17, giving the classic interlocking look.
+- Keep `stroke="currentColor"` so the mark inherits colour, and set a proportionally thinner stroke width plus `vectorEffect="non-scaling-stroke"` so the rings stay crisp at small sizes.
+- Keep the exported API (`className`, `aria-hidden`) unchanged so `Logo`, the nav, footer, and loading screen need no edits.
+
+Optionally bump the rings' height in `Logo` slightly (h-5 to h-6) so they sit visually balanced against the wordmark.
+
+## Scope
+
+One file: `src/components/site/Logo.tsx`. No layout, routing, or data changes.

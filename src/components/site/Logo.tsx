@@ -2,9 +2,17 @@ import { cn } from "@/lib/utils";
 
 export function AudiRings({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 200 40" fill="none" className={cn("h-6 w-auto", className)} aria-hidden>
-      {[10, 50, 90, 130].map((cx) => (
-        <circle key={cx} cx={cx} cy={20} r={15} stroke="currentColor" strokeWidth="2.5" />
+    <svg viewBox="0 0 124 36" fill="none" className={cn("h-6 w-auto", className)} aria-hidden>
+      {[18, 46, 74, 102].map((cx) => (
+        <circle
+          key={cx}
+          cx={cx}
+          cy={18}
+          r={17}
+          stroke="currentColor"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+        />
       ))}
     </svg>
   );

@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState, type ReactElement } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, Html, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
@@ -329,7 +329,7 @@ function Gearbox({ selected }: { selected: boolean }) {
   );
 }
 
-const GEOMETRY: Record<string, (p: { selected: boolean }) => JSX.Element> = {
+const GEOMETRY: Record<string, (p: { selected: boolean }) => ReactElement> = {
   ice: ICE,
   turbo: Turbo,
   mguh: MGUH,
@@ -397,14 +397,6 @@ function PartNode({
       )}
     </group>
   );
-}
-
-function Rig({ auto }: { auto: boolean }) {
-  const g = useRef<THREE.Group>(null);
-  useFrame((_, dt) => {
-    if (auto && g.current) g.current.rotation.y += dt * 0.18;
-  });
-  return null;
 }
 
 export default function EngineScene() {

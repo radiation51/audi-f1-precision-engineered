@@ -21,7 +21,7 @@ export function AudiRings({ className }: { className?: string }) {
 export function Logo({ className, compact }: { className?: string; compact?: boolean }) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <AudiRings className="h-5 w-auto text-foreground" />
+      <AudiRings className="h-6 w-auto text-foreground" />
       {!compact && (
         <div className="flex items-center gap-2">
           <span className="h-4 w-px bg-border" />

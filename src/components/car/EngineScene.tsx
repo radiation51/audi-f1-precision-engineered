@@ -1,30 +1,348 @@
 import { Suspense, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, Html } from "@react-three/drei";
+import { OrbitControls, Environment, Html, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
 import { ENGINE_PARTS, type EnginePart } from "@/data/engineParts";
 
+type Vec3 = [number, number, number];
+
 type Placed = {
   part: EnginePart;
-  base: [number, number, number]; // exploded offset direction
-  origin: [number, number, number];
-  size: [number, number, number];
-  shape: "box" | "cyl" | "sphere";
+  origin: Vec3;
+  dir: Vec3; // explode direction
 };
 
+const P = (id: string) => ENGINE_PARTS.find((p) => p.id === id)!;
+
 const LAYOUT: Placed[] = [
-  { part: ENGINE_PARTS[0], base: [0, 0, 0],   origin: [0, 0, 0],     size: [1.2, 0.9, 0.9], shape: "box" },       // ICE
-  { part: ENGINE_PARTS[1], base: [1.2, 0, 0], origin: [0.9, 0.15, 0], size: [0.35, 0.35, 0.35], shape: "cyl" },   // Turbo
-  { part: ENGINE_PARTS[2], base: [1.2, 0.8, 0], origin: [0.9, 0.55, 0], size: [0.3, 0.3, 0.3], shape: "sphere" }, // MGU-H
-  { part: ENGINE_PARTS[3], base: [-1.2, 0, 0], origin: [-0.85, 0, 0], size: [0.35, 0.35, 0.35], shape: "sphere" },// MGU-K
-  { part: ENGINE_PARTS[4], base: [0, -1.2, 0], origin: [0, -0.7, 0],  size: [1.1, 0.25, 0.6], shape: "box" },     // Battery
-  { part: ENGINE_PARTS[5], base: [0, 1.2, 0],  origin: [0, 0.65, 0],  size: [0.9, 0.15, 0.5], shape: "box" },     // ERS
-  { part: ENGINE_PARTS[6], base: [0, 0, 1.2],  origin: [0, 0.1, 0.65], size: [0.7, 0.35, 0.15], shape: "box" },   // Cooling
-  { part: ENGINE_PARTS[7], base: [-1.2, -0.4, 0], origin: [-0.9, -0.2, 0.4], size: [0.45, 0.35, 0.55], shape: "box" }, // Gearbox
+  { part: P("ice"),      origin: [0, 0, 0],        dir: [0, 0, 0] },
+  { part: P("turbo"),    origin: [1.05, 0.15, 0],  dir: [1.3, 0.15, 0] },
+  { part: P("mguh"),     origin: [0.62, 0.5, 0],   dir: [0.9, 1.1, 0] },
+  { part: P("mguk"),     origin: [-0.95, -0.1, 0], dir: [-1.4, -0.1, 0] },
+  { part: P("battery"),  origin: [0, -0.78, 0],    dir: [0, -1.3, 0] },
+  { part: P("ers"),      origin: [0, 0.72, 0],     dir: [0, 1.25, 0] },
+  { part: P("cooling"),  origin: [0, 0.05, 0.85],  dir: [0, 0.1, 1.4] },
+  { part: P("gearbox"),  origin: [-1.5, -0.05, 0], dir: [-2.2, -0.1, 0] },
 ];
 
-function Part({
+function mat(color: string, selected: boolean, opts?: { metalness?: number; roughness?: number }) {
+  return (
+    <meshStandardMaterial
+      color={color}
+      metalness={opts?.metalness ?? 0.85}
+      roughness={opts?.roughness ?? 0.3}
+      emissive={selected ? color : "#000000"}
+      emissiveIntensity={selected ? 0.45 : 0}
+    />
+  );
+}
+
+/* ---------------- Individual detailed component geometries ---------------- */
+
+function ICE({ selected }: { selected: boolean }) {
+  const c = P("ice").color;
+  const banks: Vec3[] = [
+    [0, 0.3, 0.26],
+    [0, 0.3, -0.26],
+  ];
+  return (
+    <group>
+      {/* crankcase / block */}
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[1.25, 0.5, 0.8]} />
+        {mat(c, selected, { metalness: 0.8, roughness: 0.35 })}
+      </mesh>
+      {/* sump */}
+      <mesh position={[0, -0.34, 0]} castShadow>
+        <boxGeometry args={[1.05, 0.2, 0.6]} />
+        {mat("#5c5c60", selected, { roughness: 0.5 })}
+      </mesh>
+      {/* V6 cylinder banks */}
+      {banks.map((p, bi) => (
+        <group key={bi} position={p} rotation={[bi === 0 ? 0.42 : -0.42, 0, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[1.15, 0.42, 0.34]} />
+            {mat(c, selected)}
+          </mesh>
+          {/* cam cover */}
+          <mesh position={[0, 0.27, 0]} castShadow>
+            <boxGeometry args={[1.05, 0.12, 0.3]} />
+            {mat("#b8241f", selected, { roughness: 0.4 })}
+          </mesh>
+          {/* 3 cylinders per bank */}
+          {[-0.36, 0, 0.36].map((x) => (
+            <mesh key={x} position={[x, 0.4, 0]} castShadow>
+              <cylinderGeometry args={[0.1, 0.1, 0.16, 20]} />
+              {mat("#8a8a90", selected, { roughness: 0.35 })}
+            </mesh>
+          ))}
+        </group>
+      ))}
+      {/* intake plenum in the vee */}
+      <mesh position={[0, 0.45, 0]} castShadow>
+        <boxGeometry args={[0.8, 0.18, 0.22]} />
+        {mat("#3a3a3f", selected, { roughness: 0.45 })}
+      </mesh>
+      {/* exhaust headers */}
+      {[0.26, -0.26].map((z) =>
+        [-0.34, 0, 0.34].map((x) => (
+          <mesh key={`${z}${x}`} position={[x, 0.5, z * 1.9]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <torusGeometry args={[0.12, 0.032, 10, 22, Math.PI]} />
+            {mat("#c2603a", selected, { metalness: 0.95, roughness: 0.25 })}
+          </mesh>
+        )),
+      )}
+    </group>
+  );
+}
+
+function Turbo({ selected }: { selected: boolean }) {
+  const c = P("turbo").color;
+  const spin = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    if (spin.current) spin.current.rotation.x += dt * 14;
+  });
+  return (
+    <group rotation={[0, 0, 0]}>
+      {/* compressor housing (snail) */}
+      <group position={[0, 0, 0.24]}>
+        <mesh castShadow>
+          <torusGeometry args={[0.19, 0.11, 16, 32]} />
+          {mat(c, selected, { metalness: 0.9, roughness: 0.25 })}
+        </mesh>
+        <mesh position={[0, 0, 0.06]}>
+          <cylinderGeometry args={[0.1, 0.1, 0.14, 24]} />
+          {mat("#2c2c30", selected)}
+        </mesh>
+      </group>
+      {/* turbine housing */}
+      <group position={[0, 0, -0.24]}>
+        <mesh castShadow>
+          <torusGeometry args={[0.19, 0.11, 16, 32]} />
+          {mat("#8f3b2c", selected, { metalness: 0.95, roughness: 0.35 })}
+        </mesh>
+      </group>
+      {/* center shaft + spinning wheel */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.075, 0.075, 0.5, 20]} />
+        {mat("#6e6e74", selected)}
+      </mesh>
+      <group ref={spin} position={[0, 0, 0.3]}>
+        {Array.from({ length: 9 }).map((_, i) => (
+          <mesh key={i} rotation={[(i / 9) * Math.PI * 2, 0.5, 0]} castShadow>
+            <boxGeometry args={[0.02, 0.17, 0.07]} />
+            {mat("#d8d8dc", selected, { roughness: 0.15 })}
+          </mesh>
+        ))}
+      </group>
+      {/* wastegate pipe */}
+      <mesh position={[0.16, 0.16, -0.24]} rotation={[0, 0, -0.6]} castShadow>
+        <cylinderGeometry args={[0.045, 0.045, 0.3, 14]} />
+        {mat("#c2603a", selected)}
+      </mesh>
+    </group>
+  );
+}
+
+function MGUH({ selected }: { selected: boolean }) {
+  const c = P("mguh").color;
+  return (
+    <group rotation={[0, 0, Math.PI / 2]}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.17, 0.17, 0.42, 28]} />
+        {mat(c, selected, { metalness: 0.7, roughness: 0.35 })}
+      </mesh>
+      {/* cooling fins */}
+      {[-0.14, -0.05, 0.05, 0.14].map((y) => (
+        <mesh key={y} position={[0, y, 0]}>
+          <torusGeometry args={[0.18, 0.014, 8, 28]} />
+          {mat("#3d3d42", selected)}
+        </mesh>
+      ))}
+      {/* end caps */}
+      {[-0.23, 0.23].map((y) => (
+        <mesh key={y} position={[0, y, 0]} castShadow>
+          <cylinderGeometry args={[0.12, 0.12, 0.06, 24]} />
+          {mat("#2b2b30", selected)}
+        </mesh>
+      ))}
+      {/* HV cable */}
+      <mesh position={[0.1, -0.3, 0]} rotation={[0, 0, 0.4]}>
+        <cylinderGeometry args={[0.026, 0.026, 0.3, 10]} />
+        {mat("#ff8a00", selected, { metalness: 0.2, roughness: 0.7 })}
+      </mesh>
+    </group>
+  );
+}
+
+function MGUK({ selected }: { selected: boolean }) {
+  const c = P("mguk").color;
+  return (
+    <group rotation={[0, 0, Math.PI / 2]}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.21, 0.21, 0.46, 30]} />
+        {mat(c, selected, { metalness: 0.72, roughness: 0.34 })}
+      </mesh>
+      {Array.from({ length: 12 }).map((_, i) => (
+        <mesh key={i} rotation={[0, (i / 12) * Math.PI * 2, 0]} position={[0, 0, 0]}>
+          <boxGeometry args={[0.44, 0.46, 0.02]} />
+          {mat("#1f1f24", selected, { roughness: 0.6 })}
+        </mesh>
+      ))}
+      <mesh position={[0, 0.28, 0]} castShadow>
+        <cylinderGeometry args={[0.07, 0.07, 0.16, 20]} />
+        {mat("#9a9aa0", selected)}
+      </mesh>
+      <mesh position={[-0.14, -0.3, 0]} rotation={[0, 0, -0.4]}>
+        <cylinderGeometry args={[0.028, 0.028, 0.32, 10]} />
+        {mat("#ff8a00", selected, { metalness: 0.2, roughness: 0.7 })}
+      </mesh>
+    </group>
+  );
+}
+
+function Battery({ selected }: { selected: boolean }) {
+  const c = P("battery").color;
+  const cells: Vec3[] = [];
+  for (let x = -0.45; x <= 0.451; x += 0.18) for (let z = -0.2; z <= 0.201; z += 0.2) cells.push([x, 0.11, z]);
+  return (
+    <group>
+      {/* casing */}
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[1.2, 0.2, 0.66]} />
+        {mat("#22262c", selected, { metalness: 0.6, roughness: 0.5 })}
+      </mesh>
+      {/* cell modules */}
+      {cells.map((p, i) => (
+        <mesh key={i} position={p} castShadow>
+          <boxGeometry args={[0.15, 0.1, 0.16]} />
+          {mat(c, selected, { metalness: 0.5, roughness: 0.3 })}
+        </mesh>
+      ))}
+      {/* bus bar */}
+      <mesh position={[0, 0.18, 0]}>
+        <boxGeometry args={[1.0, 0.02, 0.05]} />
+        {mat("#ff8a00", selected, { metalness: 0.4, roughness: 0.4 })}
+      </mesh>
+      {/* mounting rails */}
+      {[-0.36, 0.36].map((z) => (
+        <mesh key={z} position={[0, -0.12, z]}>
+          <boxGeometry args={[1.24, 0.05, 0.06]} />
+          {mat("#4a4a50", selected)}
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ERS({ selected }: { selected: boolean }) {
+  const c = P("ers").color;
+  return (
+    <group>
+      {/* control unit box */}
+      <mesh castShadow>
+        <boxGeometry args={[0.95, 0.16, 0.5]} />
+        {mat("#1d2229", selected, { metalness: 0.5, roughness: 0.55 })}
+      </mesh>
+      {/* heat sink fins */}
+      {Array.from({ length: 11 }).map((_, i) => (
+        <mesh key={i} position={[-0.42 + i * 0.084, 0.13, 0]}>
+          <boxGeometry args={[0.03, 0.1, 0.44]} />
+          {mat(c, selected, { metalness: 0.8, roughness: 0.25 })}
+        </mesh>
+      ))}
+      {/* connectors */}
+      {[-0.3, 0, 0.3].map((x) => (
+        <mesh key={x} position={[x, -0.1, 0.2]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.04, 0.04, 0.1, 14]} />
+          {mat("#ff8a00", selected, { metalness: 0.3, roughness: 0.6 })}
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Cooling({ selected }: { selected: boolean }) {
+  const c = P("cooling").color;
+  return (
+    <group>
+      {/* radiator core */}
+      <mesh castShadow>
+        <boxGeometry args={[0.9, 0.5, 0.09]} />
+        {mat("#191c20", selected, { metalness: 0.4, roughness: 0.8 })}
+      </mesh>
+      {/* fins */}
+      {Array.from({ length: 16 }).map((_, i) => (
+        <mesh key={i} position={[-0.42 + i * 0.056, 0, 0.05]}>
+          <boxGeometry args={[0.02, 0.46, 0.015]} />
+          {mat(c, selected, { metalness: 0.6, roughness: 0.4 })}
+        </mesh>
+      ))}
+      {/* end tanks */}
+      {[-0.47, 0.47].map((x) => (
+        <mesh key={x} position={[x, 0, 0]} castShadow>
+          <boxGeometry args={[0.07, 0.52, 0.11]} />
+          {mat("#2f3338", selected)}
+        </mesh>
+      ))}
+      {/* hoses */}
+      {[0.2, -0.2].map((y) => (
+        <mesh key={y} position={[-0.58, y, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <cylinderGeometry args={[0.045, 0.045, 0.24, 14]} />
+          {mat("#4ea3ff", selected, { metalness: 0.2, roughness: 0.7 })}
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Gearbox({ selected }: { selected: boolean }) {
+  const c = P("gearbox").color;
+  return (
+    <group>
+      {/* bell housing (tapered casing) */}
+      <mesh rotation={[0, 0, Math.PI / 2]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.34, 0.2, 0.75, 8]} />
+        {mat(c, selected, { metalness: 0.7, roughness: 0.4 })}
+      </mesh>
+      {/* gear stack visible on top */}
+      {[-0.2, -0.06, 0.08, 0.22].map((x, i) => (
+        <mesh key={x} position={[x, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <cylinderGeometry args={[0.13 - i * 0.015, 0.13 - i * 0.015, 0.09, 18]} />
+          {mat("#8f9298", selected, { metalness: 0.95, roughness: 0.2 })}
+        </mesh>
+      ))}
+      {/* output shafts / driveshafts */}
+      {[0.4, -0.4].map((z) => (
+        <mesh key={z} position={[-0.1, -0.08, z]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <cylinderGeometry args={[0.05, 0.05, 0.35, 16]} />
+          {mat("#6d7075", selected)}
+        </mesh>
+      ))}
+      {/* rear crash structure mount */}
+      <mesh position={[-0.45, 0, 0]} castShadow>
+        <boxGeometry args={[0.12, 0.26, 0.26]} />
+        {mat("#26282c", selected, { roughness: 0.6 })}
+      </mesh>
+    </group>
+  );
+}
+
+const GEOMETRY: Record<string, (p: { selected: boolean }) => JSX.Element> = {
+  ice: ICE,
+  turbo: Turbo,
+  mguh: MGUH,
+  mguk: MGUK,
+  battery: Battery,
+  ers: ERS,
+  cooling: Cooling,
+  gearbox: Gearbox,
+};
+
+/* ---------------- Scene plumbing ---------------- */
+
+function PartNode({
   placed,
   explode,
   selected,
@@ -35,57 +353,58 @@ function Part({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const ref = useRef<THREE.Mesh>(null);
-  const target = useMemo(() => {
-    const b = placed.base;
-    return [
-      placed.origin[0] + b[0] * explode,
-      placed.origin[1] + b[1] * explode,
-      placed.origin[2] + b[2] * explode,
-    ] as [number, number, number];
-  }, [placed, explode]);
+  const ref = useRef<THREE.Group>(null);
+  const target = useMemo<Vec3>(
+    () => [
+      placed.origin[0] + placed.dir[0] * explode,
+      placed.origin[1] + placed.dir[1] * explode,
+      placed.origin[2] + placed.dir[2] * explode,
+    ],
+    [placed, explode],
+  );
 
   useFrame(() => {
-    const m = ref.current;
-    if (!m) return;
-    m.position.lerp(new THREE.Vector3(...target), 0.12);
-    // Animate piston bounce on ICE
-    if (placed.part.id === "ice") {
-      m.scale.y = 1 + Math.sin(performance.now() * 0.02) * 0.02;
-    }
+    if (ref.current) ref.current.position.lerp(new THREE.Vector3(...target), 0.12);
   });
 
-  const color = placed.part.color;
+  const Geo = GEOMETRY[placed.part.id];
+
   return (
     <group>
-      <mesh
+      <group
         ref={ref}
         position={placed.origin}
-        onClick={(e) => { e.stopPropagation(); onSelect(); }}
-        onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = "pointer"; }}
-        onPointerOut={() => { document.body.style.cursor = "default"; }}
-        castShadow
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect();
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = "default";
+        }}
       >
-        {placed.shape === "box" && <boxGeometry args={placed.size} />}
-        {placed.shape === "cyl" && <cylinderGeometry args={[placed.size[0], placed.size[0], placed.size[1], 24]} />}
-        {placed.shape === "sphere" && <sphereGeometry args={[placed.size[0], 24, 16]} />}
-        <meshStandardMaterial
-          color={color}
-          metalness={0.75}
-          roughness={0.28}
-          emissive={selected ? color : "#000"}
-          emissiveIntensity={selected ? 0.4 : 0}
-        />
-      </mesh>
+        {Geo ? <Geo selected={selected} /> : null}
+      </group>
       {selected && (
-        <Html position={target} center distanceFactor={6}>
-          <div className="whitespace-nowrap rounded bg-primary px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-white">
+        <Html position={target} center distanceFactor={7}>
+          <div className="pointer-events-none whitespace-nowrap rounded bg-primary px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-white">
             {placed.part.name}
           </div>
         </Html>
       )}
     </group>
   );
+}
+
+function Rig({ auto }: { auto: boolean }) {
+  const g = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    if (auto && g.current) g.current.rotation.y += dt * 0.18;
+  });
+  return null;
 }
 
 export default function EngineScene() {
@@ -95,14 +414,15 @@ export default function EngineScene() {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
       <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border bg-carbon">
-        <Canvas shadows dpr={[1, 1.75]} camera={{ position: [3.2, 2.4, 3.4], fov: 45 }}>
+        <Canvas shadows dpr={[1, 1.75]} camera={{ position: [3.4, 2.2, 3.6], fov: 42 }}>
           <color attach="background" args={["#0a0a0b"]} />
-          <ambientLight intensity={0.35} />
-          <directionalLight position={[4, 5, 3]} intensity={1.1} castShadow />
-          <spotLight position={[-3, 4, -2]} intensity={0.7} color={"#e30613"} />
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[4, 6, 3]} intensity={1.3} castShadow />
+          <spotLight position={[-4, 4, -3]} intensity={1.1} color={"#e30613"} />
+          <pointLight position={[0, -2, 2]} intensity={0.5} color={"#4ea3ff"} />
           <Suspense fallback={null}>
             {LAYOUT.map((p) => (
-              <Part
+              <PartNode
                 key={p.part.id}
                 placed={p}
                 explode={explode}
@@ -110,9 +430,10 @@ export default function EngineScene() {
                 onSelect={() => setSelected(p.part)}
               />
             ))}
+            <ContactShadows position={[0, -1.6, 0]} opacity={0.5} scale={12} blur={2.6} far={6} />
             <Environment preset="city" />
           </Suspense>
-          <OrbitControls enablePan={false} minDistance={3} maxDistance={10} />
+          <OrbitControls enablePan={false} minDistance={2.5} maxDistance={11} />
         </Canvas>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
@@ -124,10 +445,13 @@ export default function EngineScene() {
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Explode</span>
           <input
             type="range"
-            min={0} max={1.6} step={0.02}
+            min={0}
+            max={1.6}
+            step={0.02}
             value={explode}
             onChange={(e) => setExplode(parseFloat(e.target.value))}
             className="flex-1 accent-primary"
+            aria-label="Explode power unit"
           />
         </div>
       </div>
